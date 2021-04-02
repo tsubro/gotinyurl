@@ -13,8 +13,8 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./mongod.conf:/etc/mongod.conf
-      - $HOME/OpenProjects/Tiny_URL_Service/tiny-url-metadata/db-data/:/data/db
-      - $HOME/OpenProjects/Tiny_URL_Service/tiny-url-metadata/app/log/:/var/log/mongodb/
+      - $HOME/OpenProjects/gotinyurl/tiny-url-metadata/db-data/:/data/db
+      - $HOME/OpenProjects/gotinyurl/tiny-url-metadata/app/log/:/var/log/mongodb/
     ports:
       - "27017:27017"
     command: ["-f", "/etc/mongod.conf"]

@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: tiny-url-db
+    environment:
+      MONGO_INITDB_DATABASE: tinydb
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongod.conf:/etc/mongod.conf
+      - ../metadata/db-data/:/data/db
+      - ../metadata/app/log/:/var/log/mongodb/
+    ports:
+      - 27017:27017
+    command: ["-f", "/etc/mongod.conf"]
+
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass root
+    container_name: tiny-url-cache
+    ports:
+      - 6479:6379
+    volumes:
+      - ../metadata/redis-data:/var/lib/redis
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      node_net:
+        ipv4_address: 172.28.1.4
+
+# networking for the Redis container
+networks:
+  node_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

@@ -15,4 +15,5 @@ func ValidateInput(req *models.TinyUrlRequest) error {
 	if err != nil {
 		return errors.New("Input Url Not In Proper Format")
 	}
+	return nil
 }

@@ -21,7 +21,7 @@ func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := utils.ValidateInput(&req) 
+	err = utils.ValidateInput(&req) 
 	if err != nil {
 		e,_ := json.Marshal(models.TinyUrlError{Message : err.Error()})
 		w.WriteHeader(400)

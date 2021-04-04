@@ -5,6 +5,7 @@ import(
 	"encoding/json"
 	"tiny-url/models"
 	"tiny-url/utils"
+	"tiny-url/services"
 )
 
 func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,7 @@ func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	services.GenerateTinyUrl(&req)
 	res := models.TinyUrlResponse{}
 	res.TinyUrl = req.Url
 

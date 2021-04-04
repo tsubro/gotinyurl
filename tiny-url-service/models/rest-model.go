@@ -2,7 +2,8 @@ package models
 
 
 type TinyUrlRequest struct {
-	Url string `json:"url"`
+	UserId int 	`json:"user_id"`
+	Url string 		`json:"url"`
 }
 
 type TinyUrlResponse struct {

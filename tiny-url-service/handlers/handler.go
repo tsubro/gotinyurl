@@ -30,9 +30,9 @@ func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	services.GenerateTinyUrl(&req)
+	hash,_ :=services.GenerateTinyUrl(&req)
 	res := models.TinyUrlResponse{}
-	res.TinyUrl = req.Url
+	res.TinyUrl = hash
 
 	js, _ := json.Marshal(res)
 

@@ -13,6 +13,7 @@ services:
       - ../metadata-db/db-data/:/data/db
     ports:
       - 28017:27017
+    network_mode: tinyurl-network
 
   redis:
     image: redis:alpine

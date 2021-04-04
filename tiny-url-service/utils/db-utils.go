@@ -10,13 +10,13 @@ import (
 
 func GetMongoConnection() *mongo.Client {
 
-	clientOptions := options.Client().ApplyURI("mongodb://tinyuser:tinypass@localhost:28017/tinydb")
+	clientOptions := options.Client().ApplyURI("mongodb://tinyuser:tinypass@tiny-url-db:27017/tinydb")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	err = client.Ping(context.TODO(), nil)
 
 	if err != nil {

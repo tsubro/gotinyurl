@@ -8,7 +8,7 @@ import(
 	"strconv"
 )
 
-func GenerateTinyUrl(req *models.TinyUrlRequest) error {
+func GenerateTinyUrl(req *models.TinyUrlRequest) (string, error) {
 
 	hashUrl := b64.StdEncoding.EncodeToString([]byte(strconv.Itoa(req.UserId)+"#"+req.Url))
 
@@ -16,5 +16,5 @@ func GenerateTinyUrl(req *models.TinyUrlRequest) error {
 	u := models.UrlModel{HashedUrl : hashUrl, OriginalUrl: req.Url, CreationDate : dt, ExpiryDate : dt, UserId : req.UserId}
 
 	dao.Insert(&u)
-	return nil
+	return hashUrl, nil
 }

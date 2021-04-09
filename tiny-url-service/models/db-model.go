@@ -3,7 +3,7 @@ package models
 
 type UrlModel struct {
 
-	HashedUrl string
+	Hash string
 	OriginalUrl string
 	CreationDate int64
 	ExpiryDate int64

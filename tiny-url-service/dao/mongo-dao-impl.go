@@ -3,37 +3,36 @@ package dao
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	// "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"tiny-url/models"
 	"tiny-url/utils"
 )
 
-func Insert(r *models.UrlModel) {
+func Insert(r *models.UrlModel) error  {
 
-	collection := utils.GetMongoConnection().Database("tinydb").Collection("url-test")
+	collection := utils.GetMongoConnection().Database("tinydb").Collection("url")
 
 	insertResult, err := collection.InsertOne(context.TODO(), r)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	log.Info("Inserted a single document: ", insertResult.InsertedID)
+	return nil
 }
 
-// func Get(jobId string)  {
-// 	collection := utils.GetMongoConnection().Database("document-renderer").Collection("render-job")
+func Get(hash string) (*models.UrlModel, error) {
+	collection := utils.GetMongoConnection().Database("tinydb").Collection("url")
 
-// 	var job models.RenderJob
+	var r models.UrlModel
 
-// 	err := collection.FindOne(context.TODO(), bson.D{{"jobid", jobId}}).Decode(&job)
-// 	if err != nil {
-// 		log.Error(err)
-// 		return nil, err
-// 	}
-
-// 	log.Info("Fetched a single document succefully")
-// 	return &job, nil
-// }
+	err := collection.FindOne(context.TODO(), bson.D{{"hash", hash}}).Decode(&r)
+	if err != nil {
+		return nil, err
+	}
+	log.Info("Fetched a single document succefully")
+	return &r, nil
+}
 
 // func Update() {
 // 	collection := utils.GetMongoConnection().Database("document-renderer").Collection("render-job")

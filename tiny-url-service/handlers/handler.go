@@ -1,11 +1,13 @@
 package handlers
 
-import(
-	"net/http"
+import (
 	"encoding/json"
+	"net/http"
 	"tiny-url/models"
-	"tiny-url/utils"
 	"tiny-url/services"
+	"tiny-url/utils"
+
+	"github.com/gorilla/mux"
 )
 
 func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +32,7 @@ func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hash,_ :=services.GenerateTinyUrl(&req)
+	hash,_ := services.GenerateTinyUrl(&req)
 	res := models.TinyUrlResponse{}
 	res.TinyUrl = hash
 
@@ -39,3 +41,21 @@ func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 	w.Write(js)
 }
+
+func ServeRequest(w http.ResponseWriter, r *http.Request) {
+
+	d := json.NewDecoder(r.Body)
+	req := models.ServeRequest{}
+
+	err := d.Decode(&req)
+	if err != nil {
+		e,_ := json.Marshal(models.TinyUrlError{Message : "Request Not In Proper Format"})
+		w.WriteHeader(400)
+		w.Write(e)
+		return
+	}
+	params := mux.Vars(r)
+	services.ServeRequest(params["hash"], &req, &w, r)
+
+}
+

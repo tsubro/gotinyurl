@@ -6,11 +6,12 @@ import(
 	"errors"
 )
 
-func ValidateInput(req *models.TinyUrlRequest) error {
+func ValidateInput(req *models.Request) error {
 
 	if req.Url == "" {
 		return errors.New("Input Url Is Empty")
 	}
+	
 	_, err := url.ParseRequestURI(req.Url)
 	if err != nil {
 		return errors.New("Input Url Not In Proper Format")

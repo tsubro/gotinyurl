@@ -5,8 +5,7 @@ type UrlModel struct {
 
 	Hash string
 	OriginalUrl string
-	CreationDate int64
-	ExpiryDate int64
+	CreationTime int64
+	ExpiryTime int64
 	UserId int
-
 }

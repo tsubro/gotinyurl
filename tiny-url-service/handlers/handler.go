@@ -6,56 +6,62 @@ import (
 	"tiny-url/models"
 	"tiny-url/services"
 	"tiny-url/utils"
-
 	"github.com/gorilla/mux"
 )
 
-func GenerateTinyUrl(w http.ResponseWriter, r *http.Request) {
+func EncodeUrl(w http.ResponseWriter, r *http.Request) {
 
 	d := json.NewDecoder(r.Body)
-	req := models.TinyUrlRequest{}
-
+	req := models.Request{}
 	err := d.Decode(&req)
 
 	if err != nil {
-		e,_ := json.Marshal(models.TinyUrlError{Message : "Request Not In Proper Format"})
-		w.WriteHeader(400)
-		w.Write(e)
+		sendErrorResponse(&w, 400, "Request Not In Proper Format")
 		return
 	}
 
 	err = utils.ValidateInput(&req) 
 	if err != nil {
-		e,_ := json.Marshal(models.TinyUrlError{Message : err.Error()})
-		w.WriteHeader(400)
-		w.Write(e)
+		sendErrorResponse(&w, 400, err.Error())
 		return
 	}
 
-	hash,_ := services.GenerateTinyUrl(&req)
-	res := models.TinyUrlResponse{}
-	res.TinyUrl = hash
+	res, err := services.EncodeUrl(&req)
+	
 
 	js, _ := json.Marshal(res)
-
+	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(201)
 	w.Write(js)
 }
 
 func ServeRequest(w http.ResponseWriter, r *http.Request) {
 
-	d := json.NewDecoder(r.Body)
-	req := models.ServeRequest{}
+	params := mux.Vars(r)
+	services.ServeRequest(params["hash"], &w, r)
+}
 
-	err := d.Decode(&req)
-	if err != nil {
-		e,_ := json.Marshal(models.TinyUrlError{Message : "Request Not In Proper Format"})
-		w.WriteHeader(400)
-		w.Write(e)
+func Info(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	res,err := services.Info(params["hash"])
+
+	if err !=  nil {
+		sendErrorResponse(&w, 400, err.Error())
 		return
 	}
-	params := mux.Vars(r)
-	services.ServeRequest(params["hash"], &req, &w, r)
 
+	js, _ := json.Marshal(res)
+	w.Header().Add("content-type", "application/json")
+	w.WriteHeader(200)
+	w.Write(js)
+}
+
+func sendErrorResponse(w *http.ResponseWriter, httpStatus int, message string) {
+
+	e := `{"message" : "`+message+`"}`
+	(*w).Header().Add("content-type", "application/json")
+	(*w).WriteHeader(httpStatus)
+	(*w).Write([]byte(e))
 }
 

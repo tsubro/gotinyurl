@@ -11,23 +11,43 @@ import (
 
 const base_uri = "http://localhost:8080/tiny/"
 
-func GenerateTinyUrl(req *models.TinyUrlRequest) (string, error) {
+func EncodeUrl(req *models.Request) (*models.Response, error) {
 
 	hash := b64.StdEncoding.EncodeToString([]byte(strconv.Itoa(req.UserId) + "#" + req.Url))
 	hash = hash[len(hash)-7:]
-	hashUrl := base_uri + hash
+	tinyUrl := base_uri + hash
 
-	dt := time.Now().Unix()
-	ex_dt := time.Now().Add(24).Unix()
-	u := models.UrlModel{Hash: hash, OriginalUrl: req.Url, CreationDate: dt, ExpiryDate: ex_dt, UserId: req.UserId}
+	crTime := time.Now().Unix()
+	exTime := time.Now().Add(24).Unix()
+	u := models.UrlModel{Hash: hash, OriginalUrl: req.Url, CreationTime: crTime, ExpiryTime: exTime, UserId: req.UserId}
 
 	err := dao.Insert(&u)
-	return hashUrl, err
+	if err != nil {
+		return nil, err
+	}
+	res := models.Response{TinyUrl: tinyUrl, Url : req.Url, ExpiryTime: exTime}
+
+	return &res, nil
 }
 
-func ServeRequest(hash string, req *models.ServeRequest, w *http.ResponseWriter, r *http.Request) {
+func ServeRequest(hash string, w *http.ResponseWriter, r *http.Request) error {
 
-	res, _ := dao.Get(hash)
-	http.Redirect(*w, r, res.OriginalUrl, http.StatusSeeOther)
+	res, err := dao.Get(hash)
+	if err != nil {
+		return  err
+	}
 
+	http.Redirect(*w, r, res.OriginalUrl, http.StatusMovedPermanently)
+	return nil
+}
+
+func Info(hash string) (*models.Response, error) {
+	res, err := dao.Get(hash)
+
+	if err != nil {
+		return  nil, err
+	}
+
+	tinyUrl := base_uri + hash
+	return &models.Response{TinyUrl: tinyUrl, Url: res.OriginalUrl, ExpiryTime : res.ExpiryTime}, nil
 }

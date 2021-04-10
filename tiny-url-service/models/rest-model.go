@@ -1,21 +1,14 @@
 package models
 
 
-type TinyUrlRequest struct {
+type Request struct {
 	UserId int 					`json:"user_id"`
 	Url string 					`json:"url"`
 }
 
-type TinyUrlResponse struct {
+type Response struct {
 	TinyUrl string 				`json:"tiny_url"`
+	Url string					`json:"url"`
+	ExpiryTime int64			`json:"expiry_time"`
 }
 
-type TinyUrlError struct {
-	Message string 				`json:"message"`
-}
-
-type ServeRequest struct {
-	UserId int					`json:"user_id"`
-	Headers map[string]string	`json:"headers"`
-	
-}
